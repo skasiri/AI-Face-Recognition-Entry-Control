@@ -12,3 +12,4 @@ packaging
 typing-extensions
 jdatetime
 face_recognition
+pandas

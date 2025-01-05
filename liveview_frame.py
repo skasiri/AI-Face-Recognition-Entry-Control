@@ -14,6 +14,8 @@ parent_frame = None
 middle_frame = None
 cap = None
 freshest_frame = None
+camera_option = 'local'
+ip_camera_connection_string = "rtsp://admin:Dailymilk10263@192.168.1.2:554/h264/ch9/main/av_stream"
 
 def create_live_view_frame(parent):
     global parent_frame, middle_frame

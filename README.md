@@ -64,5 +64,16 @@ To run the project, execute the following command in your terminal:
 python main.py
 ```
 
-Best regards,  
-Saeid Kasiri
+This will start the project and open the GUI for adding new faces, tracking attendance, and managing subscriptions.
+
+### License
+
+This project is licensed under the [MIT License](https://opensource.org/licenses/MIT).
+
+### Author
+
+This project was created by [Saeid Kasiri](https://github.com/skasiri).
+
+### Contact
+
+If you have any questions or feedback, please contact [Saeid Kasiri](https://github.com/skasiri) on GitHub.

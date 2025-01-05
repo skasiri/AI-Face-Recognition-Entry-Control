@@ -3,7 +3,7 @@ import tkinter as tk
 from tkinter import ttk
 import cv2
 import pickle
-from liveview_frame import camera_option, ip_camera_connection_string, set_camera, start_stream
+from liveview_frame import camera_option, ip_camera_connection_string, set_camera, start_stream, on_air
 
 
 def create_bottom_frame(parent):
@@ -15,7 +15,8 @@ def create_bottom_frame(parent):
         
         def save_config():
             set_camera(camera.get())
-            if not os.path.exists("config.pkl"):
+            if not on_air:
+                set_camera(camera.get())
                 start_stream()
 
             with open("config.pkl", "wb") as f:

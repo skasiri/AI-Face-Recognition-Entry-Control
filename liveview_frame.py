@@ -24,6 +24,7 @@ camera_option = None
 ip_camera_connection_string = ""
 face_locations = []
 face_names = []
+on_air = False
 
 if os.path.exists("config.pkl"):
     with open("config.pkl", "rb") as f:
@@ -64,6 +65,9 @@ def set_camera(camera):
             freshest_frame = FreshestFrame(cap)
             print(camera_option)
         except Exception as e:
+            cap = None
+            freshest_frame = None
+            canvas.delete("all")
             print(f"Error setting camera: {e}")
 
 def set_canvas(new_canvas):
@@ -93,16 +97,18 @@ def start_stream():
 
 
     def update_frame():
-        global canvas
+        global canvas, on_air
         global  face_encodings, process_current_frame, face_names, face_locations
         nonlocal last_saved_time
 
         success, frame = freshest_frame.read()
         if not success:
+            on_air = False
             print("Error: Failed to retrieve frame")
             return
 
         if process_current_frame:
+            on_air = True
             # small_frame = cv2.resize(frame, (0, 0), fx=0.5, fy=0.5)
             rgb_small_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
@@ -127,7 +133,8 @@ def start_stream():
     update_frame()
 
 def stop_stream():
-    global freshest_frame
+    global freshest_frame, on_air
+    on_air = False
     if freshest_frame is not None:
         freshest_frame.release()
 

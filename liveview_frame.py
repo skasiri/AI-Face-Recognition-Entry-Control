@@ -88,7 +88,7 @@ def start_stream():
 
 
     def update_frame():
-        global  face_encodings, process_current_frame
+        global  face_encodings, process_current_frame, face_names, face_locations
         nonlocal last_saved_time
 
         success, frame = freshest_frame.read()

@@ -24,7 +24,6 @@ def create_live_view_frame(parent):
     
     return middle_frame
 
-
 def set_camera(camera):
     global canvas
     global cap

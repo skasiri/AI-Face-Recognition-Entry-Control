@@ -46,14 +46,9 @@ known_frame.grid(row=0, column=2, sticky="nsew")
 unknown_frame = create_unknown_frame(main_frame)
 unknown_frame.grid(row=0, column=3, sticky="nsew")
 
-
 # Create bottom row
 bottom_frame = create_bottom_frame(main_frame)
 bottom_frame.grid(row=1, column=0, columnspan=4, sticky="nsew")
-
-
-
-
 
 def on_app_exit():
     # release_freshest_frame()

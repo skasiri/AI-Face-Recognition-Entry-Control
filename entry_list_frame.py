@@ -13,13 +13,13 @@ def create_entry_list_frame(parent):
 
     # Create a treeview to display the table
     tree = ttk.Treeview(entry_frame, columns=( "melli", "mobile", "timeSpent", "lastSeen", "enterAt", "name", "row"), show="headings")
-    tree.heading("row", text="Row", anchor=tk.E)
-    tree.heading("melli", text="National Code", anchor=tk.E)
-    tree.heading("name", text="Name", anchor=tk.E)
-    tree.heading("mobile", text="Mobile", anchor=tk.E)
-    tree.heading("enterAt", text="Entrance", anchor=tk.E)
-    tree.heading("lastSeen", text="Last Detect", anchor=tk.E)
-    tree.heading("timeSpent", text="Time Spent", anchor=tk.E)
+    tree.heading("row", text="Row", anchor=tk.CENTER)
+    tree.heading("melli", text="National Code", anchor=tk.CENTER)
+    tree.heading("name", text="Name", anchor=tk.CENTER)
+    tree.heading("mobile", text="Mobile", anchor=tk.CENTER)
+    tree.heading("enterAt", text="Entrance", anchor=tk.CENTER)
+    tree.heading("lastSeen", text="Last Detect", anchor=tk.CENTER)
+    tree.heading("timeSpent", text="Time Spent", anchor=tk.CENTER)
 
     # Configure column widths to fit content
     for col in tree["columns"]:

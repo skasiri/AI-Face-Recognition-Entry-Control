@@ -11,3 +11,4 @@ h5py
 packaging
 typing-extensions
 jdatetime
+face_recognition

@@ -10,6 +10,7 @@ import cv2
 import tkinter as tk
 import time
 from freshest_frame import FreshestFrame
+import face_recognition
 
 parent_frame = None
 middle_frame = None
@@ -17,7 +18,8 @@ cap = None
 freshest_frame = None
 camera_option = None
 ip_camera_connection_string = ""
-
+face_locations = []
+face_names = []
 
 if os.path.exists("config.pkl"):
     with open("config.pkl", "rb") as f:
@@ -86,8 +88,7 @@ def start_stream():
     def update_frame():
         global  face_encodings, process_current_frame
         nonlocal last_saved_time
-        face_locations = []
-        face_names = []
+
         success, frame = freshest_frame.read()
         if not success:
             print("Error: Failed to retrieve frame")
@@ -97,8 +98,8 @@ def start_stream():
             # small_frame = cv2.resize(frame, (0, 0), fx=0.5, fy=0.5)
             rgb_small_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
-            # face_locations = face_recognition.face_locations(rgb_small_frame)
-            # face_encodings = face_recognition.face_encodings(rgb_small_frame, face_locations)
+            face_locations = face_recognition.face_locations(rgb_small_frame)
+            face_encodings = face_recognition.face_encodings(rgb_small_frame, face_locations)
 
             # face_names = process_face_recognition(rgb_small_frame, face_encodings, face_locations)
 

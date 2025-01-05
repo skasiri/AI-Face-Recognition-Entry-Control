@@ -29,13 +29,16 @@ if os.path.exists("config.pkl"):
         camera_option, ip_camera_connection_string = pickle.load(f)
 
 def create_live_view_frame(parent):
-    global parent_frame, middle_frame
+    global parent_frame, middle_frame, canvas
     parent_frame = parent
     middle_frame = ttk.Frame(parent, padding="10", relief="solid")
+    middle_frame.grid(row=0, column=1, sticky="nsew")
+
     middle_label = ttk.Label(middle_frame, text="Live View", font=("Helvetica", 16))
     middle_label.pack(pady=10)
+    canvas = tk.Canvas(middle_frame, width=640, height=480)
     
-    return middle_frame
+    return canvas
 
 def set_camera(camera):
     global canvas
@@ -89,6 +92,7 @@ def start_stream():
 
 
     def update_frame():
+        global canvas
         global  face_encodings, process_current_frame, face_names, face_locations
         nonlocal last_saved_time
 
@@ -178,7 +182,7 @@ def create_register_dialog(name, image_list):
         cancel_registration()
 
     def cancel_registration():
-        global parent_frame
+        global parent_frame, canvas, middle_frame
         middle_frame.pack_forget()
         middle_frame.grid_remove()
         canvas = create_live_view_frame(parent_frame)

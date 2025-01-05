@@ -71,8 +71,8 @@ class AttendanceTracker:
                 'persianDate': persian_date,
                 'timeSpent': '0 days 00:00:00',
                 'subscription': subscription_text,
-                'allowedSessions': active_subscription[4],
-                'remainingSessions': active_subscription[5]
+                'allowedSessions': active_subscription[4] if active_subscription else '',
+                'remainingSessions': active_subscription[5] if active_subscription else ''
             })
             self.save_to_excel()
             add_attendance_row(int(melli), name, mobile,datetime.datetime.now(), datetime.datetime.now(), '0 days 00:00:00')

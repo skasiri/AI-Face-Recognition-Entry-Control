@@ -6,7 +6,7 @@ import face_recognition
 import numpy as np
 from utils.encodings import get_face_encodings
 from utils.attendance import AttendanceTracker
-
+from utils.face_list import known_faces_list
 
 unique_names = []
 face_names = []

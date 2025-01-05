@@ -36,9 +36,7 @@ entry_frame = create_entry_list_frame(main_frame)
 entry_frame.grid(row=0, column=0, sticky="nsew")
 
 # Create live view frame
-liveview_frame = create_live_view_frame(main_frame)
-liveview_frame.grid(row=0, column=1, sticky="nsew")
-canvas = tk.Canvas(liveview_frame, width=640, height=480)
+canvas = create_live_view_frame(main_frame)
 set_canvas(canvas)
 set_camera(None)
 start_stream()

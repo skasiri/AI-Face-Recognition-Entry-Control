@@ -11,6 +11,8 @@ import tkinter as tk
 import time
 from freshest_frame import FreshestFrame
 import face_recognition
+from utils.face_recognition import process_face_recognition
+from utils.draw_face import draw_faces
 
 parent_frame = None
 middle_frame = None
@@ -101,10 +103,10 @@ def start_stream():
             face_locations = face_recognition.face_locations(rgb_small_frame)
             face_encodings = face_recognition.face_encodings(rgb_small_frame, face_locations)
 
-            # face_names = process_face_recognition(rgb_small_frame, face_encodings, face_locations)
+            face_names = process_face_recognition(rgb_small_frame, face_encodings, face_locations)
 
-        # if face_names and len(face_locations) > 0 and len(face_names) > 0 and len(face_locations)==len(face_names):
-            # draw_faces(frame, face_locations, face_names)
+        if face_names and len(face_locations) > 0 and len(face_names) > 0 and len(face_locations)==len(face_names):
+            draw_faces(frame, face_locations, face_names)
 
         if canvas is not None:
             frame_pil = Image.fromarray(frame)

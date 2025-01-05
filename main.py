@@ -8,10 +8,7 @@ from bottom_frame import create_bottom_frame
 from entry_list_frame import create_entry_list_frame
 from unknown_frame import create_unknown_frame
 from known_frame import create_known_frame
-from liveview_frame import create_live_view_frame
-
-camera_source = 0
-ip_camera_connection_string = ""
+from liveview_frame import create_live_view_frame, set_canvas, set_camera, start_stream
 
 root = tk.Tk()
 root.title("AI face recognition entry system By Saeidksr")
@@ -29,6 +26,11 @@ main_frame.columnconfigure(3, weight=0)  # Smaller column
 main_frame.rowconfigure(0, weight=1)
 main_frame.rowconfigure(1, weight=0)  # Smaller row
 
+
+# Create bottom row
+bottom_frame = create_bottom_frame(main_frame)
+bottom_frame.grid(row=1, column=0, columnspan=4, sticky="nsew")
+
 # Create entry list frame
 entry_frame = create_entry_list_frame(main_frame)
 entry_frame.grid(row=0, column=0, sticky="nsew")
@@ -37,6 +39,10 @@ entry_frame.grid(row=0, column=0, sticky="nsew")
 liveview_frame = create_live_view_frame(main_frame)
 liveview_frame.grid(row=0, column=1, sticky="nsew")
 canvas = tk.Canvas(liveview_frame, width=640, height=480)
+set_canvas(canvas)
+set_camera('local')
+start_stream()
+canvas.pack(fill="both")
 
 # Create known faces frame
 known_frame = create_known_frame(main_frame)
@@ -46,9 +52,6 @@ known_frame.grid(row=0, column=2, sticky="nsew")
 unknown_frame = create_unknown_frame(main_frame)
 unknown_frame.grid(row=0, column=3, sticky="nsew")
 
-# Create bottom row
-bottom_frame = create_bottom_frame(main_frame)
-bottom_frame.grid(row=1, column=0, columnspan=4, sticky="nsew")
 
 def on_app_exit():
     # release_freshest_frame()

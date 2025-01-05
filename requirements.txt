@@ -10,3 +10,4 @@ markdown
 h5py
 packaging
 typing-extensions
+jdatetime

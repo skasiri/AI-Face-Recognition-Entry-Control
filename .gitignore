@@ -65,21 +65,15 @@ var/
 *.xlsx
 *.ppt
 *.pptx
-*.txt
 *.csv
 *.dat
 *.log
-# *.md
 *.rst
 *.yml
 *.yaml
 *.json
 *.xml
-*.html
-*.htm
 *.xhtml
-*.css
-*.js
 *.coffee
 *.litcoffee
 *.css
@@ -91,11 +85,7 @@ var/
 *.cmd
 *.ps1
 *.ps1xml
-*.py
-*.pyc
-*.pyo
 *.rb
-*.php
 *.pl
 *.pm
 *.t

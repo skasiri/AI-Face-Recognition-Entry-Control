@@ -1,0 +1,12 @@
+mediapipe
+jax
+jaxlib
+numpy
+scipy
+opencv-python
+ Pillow
+adodbapi
+markdown
+h5py
+packaging
+typing-extensions

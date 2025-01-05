@@ -20,6 +20,7 @@ __pycache__/
 .egg-info/
 .installed.cfg
 .venv
+.venv310
 bin/
 build/
 develop-eggs/

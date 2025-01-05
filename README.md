@@ -8,6 +8,9 @@ The project consists of the following components:
 - A live view feature that displays the camera feed in real-time
 - A database built with SQLite for storing face encodings and attendance data
 - A face recognition system built with OpenCV and face_recognition for detecting and recognizing faces
+- A function for validating Iranian National IDs
+- A simple subscription system that tracks entries and exits, with the entry time being the first detection of the day and the exit time being the last detection of the day
+- A feature to save an excel file per day in the Export folder, with the filename being the day date in jalali format, such as 1403-10-16.xlsx
 
 The system is designed to be user-friendly and easy to use, with clear instructions and minimal setup required.
 

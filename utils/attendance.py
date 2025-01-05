@@ -46,8 +46,8 @@ class AttendanceTracker:
                 sub.update_remaining_sessions(active_subscription[0], active_subscription[5])
         
 
-        name = person[1] + " " + person[2]
-        mobile = person[3]
+        name = person[2] + " " + person[3]
+        mobile = person[4]
         exist_item = None
 
         for item in self.attendance_list:

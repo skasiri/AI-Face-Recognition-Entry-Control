@@ -22,6 +22,7 @@ __pycache__/
 .venv
 /venv*
 venv*/
+venv310/
 bin/
 build/
 develop-eggs/

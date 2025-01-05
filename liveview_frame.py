@@ -13,6 +13,7 @@ from freshest_frame import FreshestFrame
 import face_recognition
 from utils.face_recognition import process_face_recognition
 from utils.draw_face import draw_faces
+from utils.encodings import save_encoding
 
 parent_frame = None
 middle_frame = None
@@ -124,3 +125,114 @@ def stop_stream():
     global freshest_frame
     if freshest_frame is not None:
         freshest_frame.release()
+
+def create_register_dialog(name, image_list):
+    global parent_frame
+
+    for item in image_list:
+        if item[0] == name:
+            name, face_image, confidence, landmarks_list, face_encoding, insertAt, updateAt = item  # Assuming the tuple contains (name, face_image, confidence)
+            # fname, face_image, confidence, landmarks_list, face_encoding  = item
+            break
+    
+    def validate_form():
+        if not entry_melli_code.get() or not entry_first_name.get() or not entry_last_name.get() or not entry_mobile.get():
+            return False
+        
+        melli_code = entry_melli_code.get()
+        conn = sqlite3.connect('db/main.db')
+        cursor = conn.cursor()
+        cursor.execute('SELECT * FROM persons WHERE melli = ?', (melli_code,))
+        if cursor.fetchone():
+            messagebox.showerror("Error", "کد ملی تکراری است. لطفا کد ملی دیگری وارد کنید.")
+            return False
+        conn.close()
+
+        try:
+            melli_code = int(entry_melli_code.get())
+        except ValueError:
+            messagebox.showerror("Error", "کد ملی باید عدد باشد.")
+            return False
+        
+        if len(str(melli_code)) != 10:
+            messagebox.showerror("Error", "کد ملی باید 10 رقم باشد.")
+            return False
+        
+        check = sum([int(str(melli_code)[i]) * (10 - i) for i in range(9)]) % 11
+        if (check < 2 and int(str(melli_code)[-1]) != check) or (check >= 2 and int(str(melli_code)[-1]) != 11 - check):
+            messagebox.showerror("Error", "کد ملی نامعتبر است. لطفا بررسی کنید.")
+            return False
+
+        return True
+
+    def register_user():
+        if not validate_form():
+            return
+        melli_code = entry_melli_code.get()
+        first_name = entry_first_name.get()
+        last_name = entry_last_name.get()
+        mobile = entry_mobile.get()
+        save_encoding(name, face_encoding, melli_code, first_name, last_name, mobile)
+        # Here you can add the code to handle the registration logic
+        messagebox.showinfo("Registration", "User registered successfully!")
+        cancel_registration()
+
+    def cancel_registration():
+        global parent_frame
+        middle_frame.pack_forget()
+        middle_frame.grid_remove()
+        canvas = create_live_view_frame(parent_frame)
+        set_canvas(canvas)
+        canvas.pack(fill="both")
+
+    middle_frame.pack_forget()
+    middle_frame.grid_remove()
+
+    register_frame = ttk.Frame(parent_frame, padding="10", relief="solid")
+    register_frame.grid(row=0, column=1, sticky="nsew")
+
+    middle_label = ttk.Label(register_frame, text="تعریف شخص جدید", font=("Helvetica", 16))
+    middle_label.grid(row=0, column=1, padx=10, pady=5)
+
+    # Display the face image
+    image_size = (120, 120)
+    image = cv2.cvtColor(face_image, cv2.COLOR_BGR2RGB)
+    image = cv2.resize(image, image_size, interpolation=cv2.INTER_LANCZOS4)
+    image = Image.fromarray(image)
+    photo = ImageTk.PhotoImage(image)
+    
+    image_label = ttk.Label(register_frame, image=photo)
+    image_label.image = photo
+    image_label.grid(row=0, column=0, padx=10, pady=5)
+   
+    # Melli Code
+    tk.Label(register_frame, text="کد ملی").grid(row=1, column=1, padx=10, pady=5)
+    entry_melli_code = tk.Entry(register_frame)
+    entry_melli_code.insert(0, "")
+    entry_melli_code.grid(row=1, column=0, padx=10, pady=5)
+
+    # First Name
+    tk.Label(register_frame, text="نام").grid(row=2, column=1, padx=10, pady=5)
+    entry_first_name = tk.Entry(register_frame)
+    entry_first_name.insert(0, "")
+    entry_first_name.grid(row=2, column=0, padx=10, pady=5)
+
+    # Last Name
+    tk.Label(register_frame, text="نام خانوادگی").grid(row=3, column=1, padx=10, pady=5)
+    entry_last_name = tk.Entry(register_frame)
+    entry_last_name.insert(0, "")
+    entry_last_name.grid(row=3, column=0, padx=10, pady=5)
+
+    # Mobile
+    tk.Label(register_frame, text="تلفن همراه").grid(row=4, column=1, padx=10, pady=5)
+    entry_mobile = tk.Entry(register_frame)
+    entry_mobile.insert(0, "")
+    entry_mobile.grid(row=4, column=0, padx=10, pady=5)
+
+    # Apply Button
+    apply_button = tk.Button(register_frame, text="ذخیره", command=register_user, bg="green", fg="white", height=2)
+    apply_button.grid(row=5, column=0, padx=10, pady=10, sticky="ew")
+
+    # Cancel Button
+    cancel_button = tk.Button(register_frame, text="لغو", command=cancel_registration, bg="red", fg="white", height=2)
+    cancel_button.grid(row=5, column=1, padx=10, pady=10, sticky="ew")

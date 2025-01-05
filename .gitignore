@@ -69,7 +69,7 @@ var/
 *.csv
 *.dat
 *.log
-*.md
+# *.md
 *.rst
 *.yml
 *.yaml

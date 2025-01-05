@@ -3,7 +3,7 @@ import tkinter as tk
 from tkinter import ttk
 import cv2
 import pickle
-from liveview_frame import camera_option, ip_camera_connection_string, set_camera
+from liveview_frame import camera_option, ip_camera_connection_string, set_camera, start_stream
 
 
 def create_bottom_frame(parent):
@@ -14,12 +14,16 @@ def create_bottom_frame(parent):
     def show_config_window():
         
         def save_config():
+            set_camera(camera.get())
+            if not os.path.exists("config.pkl"):
+                start_stream()
+
             with open("config.pkl", "wb") as f:
                 pickle.dump((camera.get(), connection_string.get()), f)
+
             print("Configuration saved")
-            set_camera(camera.get())
             config_window.destroy()
-            
+
         # Create a new window
         config_window = tk.Toplevel(bottom_frame)
         config_window.title("Configuration")

@@ -12,6 +12,7 @@ __pycache__/
 *.pyc
 *.pyo
 *.whl
+*.pkl
 *~
 .DS_Store
 .env

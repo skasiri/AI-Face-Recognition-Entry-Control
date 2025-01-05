@@ -1,5 +1,6 @@
 import os
 import datetime
+import pickle
 import sqlite3
 import tkinter as tk
 from tkinter import ttk, messagebox
@@ -14,8 +15,13 @@ parent_frame = None
 middle_frame = None
 cap = None
 freshest_frame = None
-camera_option = 'local'
-ip_camera_connection_string = "rtsp://admin:Dailymilk10263@192.168.1.2:554/h264/ch9/main/av_stream"
+camera_option = None
+ip_camera_connection_string = ""
+
+
+if os.path.exists("config.pkl"):
+    with open("config.pkl", "rb") as f:
+        camera_option, ip_camera_connection_string = pickle.load(f)
 
 def create_live_view_frame(parent):
     global parent_frame, middle_frame
@@ -37,12 +43,19 @@ def set_camera(camera):
     if freshest_frame is not None:
         freshest_frame.release()
 
-    camera_option = camera
-    rtsp_url = "rtsp://admin:Dailymilk10263@192.168.1.2:554/h264/ch9/main/av_stream"
+    if camera is not None:
+        camera_option = camera
     # Select the appropriate camera based on the camera_option
-    cap = cv2.VideoCapture(rtsp_url, cv2.CAP_FFMPEG) if camera_option == "ip" else cv2.VideoCapture(0)
-    freshest_frame = FreshestFrame(cap)
-    print(camera_option)
+    if camera_option is not None:
+        try:
+            if camera_option == "ip":
+                cap = cv2.VideoCapture(ip_camera_connection_string, cv2.CAP_FFMPEG)
+            else:
+                cap = cv2.VideoCapture(0)
+            freshest_frame = FreshestFrame(cap)
+            print(camera_option)
+        except Exception as e:
+            print(f"Error setting camera: {e}")
 
 def set_canvas(new_canvas):
     global canvas
@@ -58,6 +71,10 @@ def start_stream():
 
     process_current_frame = True
     face_encodings = []
+
+    if cap is None:
+        print("Error: No camera selected")
+        return
 
     if not cap.isOpened():
         print("Error: Cannot open selected camera stream")

@@ -40,7 +40,7 @@ liveview_frame = create_live_view_frame(main_frame)
 liveview_frame.grid(row=0, column=1, sticky="nsew")
 canvas = tk.Canvas(liveview_frame, width=640, height=480)
 set_canvas(canvas)
-set_camera('local')
+set_camera(None)
 start_stream()
 canvas.pack(fill="both")
 

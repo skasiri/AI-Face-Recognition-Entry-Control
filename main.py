@@ -8,7 +8,7 @@ from bottom_frame import create_bottom_frame
 from entry_list_frame import create_entry_list_frame
 from unknown_frame import create_unknown_frame
 from known_frame import create_known_frame
-from liveview_frame import create_live_view_frame, set_canvas, set_camera, start_stream
+from liveview_frame import create_live_view_frame, set_canvas, set_camera, start_stream, stop_stream
 
 root = tk.Tk()
 root.title("AI face recognition entry system By Saeidksr")
@@ -54,7 +54,7 @@ unknown_frame.grid(row=0, column=3, sticky="nsew")
 
 
 def on_app_exit():
-    # release_freshest_frame()
+    stop_stream()
     root.destroy()
 
 root.protocol("WM_DELETE_WINDOW", on_app_exit)

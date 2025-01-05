@@ -99,6 +99,7 @@ def start_stream():
 
     update_frame()
 
-def release_freshest_frame():
+def stop_stream():
+    global freshest_frame
     if freshest_frame is not None:
         freshest_frame.release()

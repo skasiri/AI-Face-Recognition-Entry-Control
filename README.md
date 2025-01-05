@@ -63,3 +63,6 @@ To run the project, execute the following command in your terminal:
 ```bash
 python main.py
 ```
+
+Best regards,  
+Saeid Kasiri

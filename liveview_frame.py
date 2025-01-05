@@ -13,7 +13,8 @@ from freshest_frame import FreshestFrame
 import face_recognition
 from utils.face_recognition import process_face_recognition
 from utils.draw_face import draw_faces
-from utils.encodings import save_encoding
+from utils.encodings import save_encoding, update_person, delete_person, get_person_by_melli
+from utils.subscription import Subscription
 
 parent_frame = None
 middle_frame = None
@@ -240,3 +241,253 @@ def create_register_dialog(name, image_list):
     # Cancel Button
     cancel_button = tk.Button(register_frame, text="لغو", command=cancel_registration, bg="red", fg="white", height=2)
     cancel_button.grid(row=5, column=1, padx=10, pady=10, sticky="ew")
+
+def create_edit_dialog(melli, image_list):
+    global parent_frame
+
+    person = get_person_by_melli(melli)
+
+    if person is None:
+        return
+    
+    for item in image_list: 
+        if item[0] == melli:
+            melli, name, face_image, confidence, landmarks_list, face_encoding, insertAt, updateAt = item 
+            break
+
+    def validate_form():
+        if not entry_first_name.get() or not entry_last_name.get() or not entry_mobile.get():
+            return False
+
+        return True
+
+    def update_user():
+        if not validate_form():
+            return
+        melli_code = entry_melli_code.get()
+        first_name = entry_first_name.get()
+        last_name = entry_last_name.get()
+        mobile = entry_mobile.get()
+        update_person(melli_code, first_name, last_name, mobile)
+        # Here you can add the code to handle the registration logic
+        messagebox.showinfo("Update User Info", "User updated successfully!")
+        cancel_registration()
+
+    def cancel_registration():
+        global parent_frame
+        middle_frame.pack_forget()
+        middle_frame.grid_remove()
+        canvas = create_live_view_frame(parent_frame)
+        set_canvas(canvas)
+        canvas.pack(fill="both")
+
+    def delete_user():
+        if messagebox.askyesno("Verify Delete", "Are you sure you want to delete this user?"):
+            delete_person(melli)
+            messagebox.showinfo("Delete User", "User deleted successfully!")
+        cancel_registration()
+
+    middle_frame.pack_forget()
+    middle_frame.grid_remove()
+
+    register_frame = ttk.Frame(parent_frame, padding="10", relief="solid")
+    register_frame.grid(row=0, column=1, sticky="nsew")
+
+    middle_label = ttk.Label(register_frame, text="ویرایش شخص", font=("Helvetica", 16))
+    middle_label.grid(row=0, column=1, padx=10, pady=5)
+
+    # Display the face image
+    image_size = (120, 120)
+    image = cv2.cvtColor(face_image, cv2.COLOR_BGR2RGB)
+    image = cv2.resize(image, image_size, interpolation=cv2.INTER_LANCZOS4)
+    image = Image.fromarray(image)
+    photo = ImageTk.PhotoImage(image)
+    
+    image_label = ttk.Label(register_frame, image=photo)
+    image_label.image = photo
+    image_label.grid(row=0, column=0, padx=10, pady=5)
+   
+    # Melli Code
+    tk.Label(register_frame, text="کد ملی").grid(row=1, column=1, padx=10, pady=5)
+    entry_melli_code = tk.Entry(register_frame)
+    entry_melli_code.insert(0, melli)
+    entry_melli_code.configure(state='readonly')
+    entry_melli_code.grid(row=1, column=0, padx=10, pady=5)
+
+    # First Name
+    tk.Label(register_frame, text="نام").grid(row=2, column=1, padx=10, pady=5)
+    entry_first_name = tk.Entry(register_frame)
+    entry_first_name.insert(0, person[2])
+    entry_first_name.grid(row=2, column=0, padx=10, pady=5)
+
+    # Last Name
+    tk.Label(register_frame, text="نام خانوادگی").grid(row=3, column=1, padx=10, pady=5)
+    entry_last_name = tk.Entry(register_frame)
+    entry_last_name.insert(0, person[3])
+    entry_last_name.grid(row=3, column=0, padx=10, pady=5)
+
+    # Mobile
+    tk.Label(register_frame, text="تلفن همراه").grid(row=4, column=1, padx=10, pady=5)
+    entry_mobile = tk.Entry(register_frame)
+    entry_mobile.insert(0, person[4])
+    entry_mobile.grid(row=4, column=0, padx=10, pady=5)
+
+    # Delete Button
+    delete_button = tk.Button(register_frame, text="حذف", command=delete_user, bg="red", fg="white", height=2)
+    delete_button.grid(row=5, column=0, columnspan=2, padx=10, pady=10, sticky="ew")
+
+    # Apply Button
+    apply_button = tk.Button(register_frame, text="ذخیره", command=update_user, bg="green", fg="white", height=2)
+    apply_button.grid(row=6, column=0, padx=10, pady=10, sticky="ew")
+
+    # Cancel Button
+    cancel_button = tk.Button(register_frame, text="لغو", command=cancel_registration, bg="red", fg="white", height=2)
+    cancel_button.grid(row=6, column=1, padx=10, pady=10, sticky="ew")
+
+def create_subscribe_form(melli):
+    global parent_frame
+
+    print('create_subscribe_form for: ', melli)
+
+    person = get_person_by_melli(melli)
+
+    if person is None:
+        return
+    
+    sub = Subscription()
+    active = sub.get_active_subscription(melli)
+    color = "green" if active else "yellow"
+
+    start_date = jdt.now().strftime("%Y-%m-%d")
+    end_date = jdt.now().date() + datetime.timedelta(days=30)
+    end_date = end_date.strftime("%Y-%m-%d")
+    num_of_sessions = 26
+    remaining_sessions = 26
+
+    if active is not None:
+        start_date = jdt.fromgregorian(date=jdt.strptime(active[2], "%Y-%m-%d")).strftime("%Y-%m-%d")
+        end_date = jdt.fromgregorian(date=jdt.strptime(active[3], "%Y-%m-%d")).strftime("%Y-%m-%d")
+        num_of_sessions = active[4]
+        remaining_sessions = active[5]
+
+    def validate_form():
+        if not entry_start_date.get() or not entry_end_date.get() or not entry_num_sessions.get() or not entry_remaining_sessions.get():
+            messagebox.showerror("Error", "All fields are required.")
+            return False
+        
+        start_date_jalali = entry_start_date.get()
+        start_date_parts = start_date_jalali.split('-')
+        start_date_gregorian = jdt(
+            int(start_date_parts[0]), int(start_date_parts[1]), int(start_date_parts[2])
+        ).togregorian().strftime("%Y-%m-%d")
+
+        end_date_jalali = entry_end_date.get()
+        end_date_parts = end_date_jalali.split('-')
+        end_date_gregorian = jdt(
+            int(end_date_parts[0]), int(end_date_parts[1]), int(end_date_parts[2])
+        ).togregorian().strftime("%Y-%m-%d")
+
+        if start_date_gregorian > end_date_gregorian:
+            messagebox.showerror("Error", "Start date must be before end date.")
+            return False
+        
+        try:
+            num_of_sessions = int(entry_num_sessions.get())
+            remaining_sessions = int(entry_remaining_sessions.get())
+        except ValueError:
+            messagebox.showerror("Error", "Number of sessions and remaining sessions must be integers.")
+            return False
+        
+        if num_of_sessions <= 0 or remaining_sessions <= 0:
+            messagebox.showerror("Error", "Number of sessions and remaining sessions must be greater than 0.")
+            return False
+        
+        if num_of_sessions < remaining_sessions:
+            messagebox.showerror("Error", "Number of sessions must be greater than or equal to remaining sessions.")
+            return False
+        
+        return True
+
+    def save_subscription():
+        if not validate_form():
+            return
+        sub = Subscription()
+        sub.add_subscription(person[1], entry_start_date.get(), entry_end_date.get(), entry_num_sessions.get(), entry_remaining_sessions.get())
+        cancel_subscription()
+
+    def delete_subscription():
+        if messagebox.askyesno("Verify Delete", "Are you sure you want to delete this subscription?"):
+            sub = Subscription()
+            sub.delete_subscription(active[0])
+        cancel_subscription()
+
+    def update_subscription():
+        if not validate_form():
+            return
+        sub = Subscription()
+        sub.update_subscription(active[0], entry_start_date.get(), entry_end_date.get(), entry_num_sessions.get(), entry_remaining_sessions.get())
+        cancel_subscription()
+
+    def cancel_subscription():
+        global parent_frame
+        middle_frame.pack_forget()
+        middle_frame.grid_remove()
+        canvas = create_live_view_frame(parent_frame)
+        set_canvas(canvas)
+        canvas.pack(fill="both")
+        
+    middle_frame.pack_forget()
+    middle_frame.grid_remove()
+
+    subscribe_frame = ttk.Frame(parent_frame, padding="10", relief="solid")
+    subscribe_frame.grid(row=0, column=1, sticky="nsew")
+
+    title = 'افزودن اشتراک' if active is None else 'ویرایش اشتراک'
+    middle_label = ttk.Label(subscribe_frame, text=title, font=("Helvetica", 16))
+    middle_label.grid(row=0, column=1, padx=10, pady=5)
+
+    # Name
+    name_label = ttk.Label(subscribe_frame, text=person[2]+" "+person[3], font=("Helvetica", 16))
+    name_label.grid(row=1, column=0, padx=10, pady=5)
+
+    # Start Date
+    tk.Label(subscribe_frame, text="تاریخ شروع").grid(row=2, column=1, padx=10, pady=5)
+    entry_start_date = tk.Entry(subscribe_frame)
+    entry_start_date.insert(0, start_date)
+    entry_start_date.grid(row=2, column=0, padx=10, pady=5)
+
+    # End Date
+    tk.Label(subscribe_frame, text="تاریخ پایان").grid(row=3, column=1, padx=10, pady=5)
+    entry_end_date = tk.Entry(subscribe_frame)
+    entry_end_date.insert(0, end_date)
+    entry_end_date.grid(row=3, column=0, padx=10, pady=5)
+
+    # Num of Sessions
+    tk.Label(subscribe_frame, text="کل جلسات").grid(row=4, column=1, padx=10, pady=5)
+    entry_num_sessions = tk.Entry(subscribe_frame)
+    entry_num_sessions.insert(0, num_of_sessions)
+    entry_num_sessions.grid(row=4, column=0, padx=10, pady=5)
+
+    # Num of Remaining Sessions
+    tk.Label(subscribe_frame, text="جلسات باقیمانده").grid(row=5, column=1, padx=10, pady=5)
+    entry_remaining_sessions = tk.Entry(subscribe_frame)
+    entry_remaining_sessions.insert(0, remaining_sessions)
+    entry_remaining_sessions.grid(row=5, column=0, padx=10, pady=5)
+
+    # Delete Button
+    if active is not None:
+        delete_button = tk.Button(subscribe_frame, text="حذف", command=delete_subscription, bg="red", fg="white", height=2)
+        delete_button.grid(row=6, column=0, columnspan=2, padx=10, pady=10, sticky="ew")
+
+        # Apply Button
+        apply_button = tk.Button(subscribe_frame, text="ویرایش اشتراک", command=update_subscription, bg=color, fg="white", height=2)
+        apply_button.grid(row=7, column=0, padx=10, pady=10, sticky="ew")
+    
+    else:
+        # Apply Button
+        apply_button = tk.Button(subscribe_frame, text="افزودن اشتراک", command=save_subscription, bg=color, fg="black", height=2)
+        apply_button.grid(row=7, column=0, padx=10, pady=10, sticky="ew")
+
+    # Cancel Button
+    cancel_button = tk.Button(subscribe_frame, text="لغو", command=cancel_subscription, bg="red", fg="white", height=2)
+    cancel_button.grid(row=7, column=1, padx=10, pady=10, sticky="ew")

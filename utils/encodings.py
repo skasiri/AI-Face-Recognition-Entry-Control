@@ -117,6 +117,14 @@ def get_face_encodings():
     global unknown_faces_list, known_face_encodings, known_face_names, known_face_melli, persons
     return unknown_faces_list, known_face_encodings, known_face_names, known_face_melli, persons
 
+def get_person_by_melli(melli):
+    conn = sqlite3.connect('db/main.db')
+    cursor = conn.cursor()
+    cursor.execute('SELECT * FROM persons WHERE melli = ?', (melli,))
+    person = cursor.fetchone()
+    conn.close()
+    return person
+
 def update_person(melli, first_name, last_name, mobile):
     conn = sqlite3.connect('db/main.db')
     cursor = conn.cursor()

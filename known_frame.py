@@ -11,6 +11,8 @@ from utils.face_list import get_known_faces_list
 from utils.subscription import Subscription
 
 known_update_frame = True
+image_frames = []
+
 def create_known_frame(parent):
 
     known_frame = ttk.Frame(parent, padding="10", relief="solid")
@@ -72,23 +74,31 @@ def create_known_frame(parent):
     def display_images(image_list):
         for item in image_list:
             melli, name, face_image, confidence, landmarks_list, face_encoding, insertAt, updateAt = item  # Assuming the tuple contains (name, face_image, confidence)
+            image_frame = create_image_frame(melli, name, face_image)
+            image_frames.append((image_frame, melli))
+
+    def create_image_frame(melli, name, face_image):
+            
+            box = ttk.Frame(known_scrollable_frame)
+            box.pack(pady=5)
+
             image = cv2.cvtColor(face_image, cv2.COLOR_BGR2RGB)
             image = cv2.resize(image, image_size, interpolation=cv2.INTER_LANCZOS4)
             image = Image.fromarray(image)
             photo = ImageTk.PhotoImage(image)
 
-            image_label = ttk.Label(known_scrollable_frame, image=photo)
-            image_label.image = photo
-            image_label.pack(pady=5)
+            image_frame = ttk.Label(box, image=photo)
+            image_frame.image = photo
+            image_frame.pack(pady=5)
 
             sub = Subscription()
             active = sub.get_active_subscription(melli)
             color = "green" if active is not None else "yellow"
 
-            name_label = ttk.Label(known_scrollable_frame, text=name, font=("Tahoma", 12), background=color)
+            name_label = ttk.Label(box, text=name, font=("Tahoma", 12), background=color)
             name_label.pack(pady=(0, 5))
             # Create a frame to hold the buttons
-            button_frame = ttk.Frame(known_scrollable_frame)
+            button_frame = ttk.Frame(box)
             button_frame.pack(pady=5)
 
             # Load icons for the buttons
@@ -107,8 +117,16 @@ def create_known_frame(parent):
             subscribe_button.image = subscribe_icon
             subscribe_button.pack(side="left", padx=5)
 
-            image_label.config(borderwidth=2, relief="solid", background=color)
+            image_frame.config(borderwidth=2, relief="solid", background=color)
 
+            return box
+
+    def remove_image_frame(melli):
+        for image_frame, image_melli in image_frames:
+            if image_melli == melli:
+                image_frame.destroy()
+                image_frames.remove((image_frame, melli))
+                break
 
     def edit_person(melli, image_list):
         print(f"Edit person: {melli}")
@@ -126,8 +144,10 @@ def create_known_frame(parent):
                 continue
 
             known_faces_list = get_known_faces_list()
-            for widget in known_scrollable_frame.winfo_children():
-                widget.destroy()
+
+            for image_frame, melli in image_frames:
+                remove_image_frame(melli)
+
             display_images(known_faces_list)
             time.sleep(3)
 

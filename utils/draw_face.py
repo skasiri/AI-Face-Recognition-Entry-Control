@@ -2,8 +2,15 @@ import cv2
 from PIL import Image, ImageTk
 import tkinter as tk
 
-def draw_faces(frame, face_locations, face_names):
+def draw_faces(frame, face_locations, face_names, frame_size_ratio):
     for (top, right, bottom, left), name in zip(face_locations, face_names):
+
+        top = int(top / frame_size_ratio)
+        right = int(right / frame_size_ratio)
+        bottom = int(bottom / frame_size_ratio)
+        left = int(left / frame_size_ratio)
+
+
         center_x, center_y = (left + right) // 2, (top + bottom) // 2
         radius = int(max(right - left, bottom - top) * 1.2) // 2
 

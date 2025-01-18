@@ -25,6 +25,7 @@ ip_camera_connection_string = ""
 face_locations = []
 face_names = []
 on_air = False
+frame_size_ratio = 0.25
 
 if os.path.exists("config.pkl"):
     with open("config.pkl", "rb") as f:
@@ -109,8 +110,10 @@ def start_stream():
 
         if process_current_frame:
             on_air = True
-            # small_frame = cv2.resize(frame, (0, 0), fx=0.5, fy=0.5)
-            rgb_small_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            small_frame = cv2.resize(frame, (0, 0), fx=frame_size_ratio, fy=frame_size_ratio)
+            gray_small_frame = cv2.cvtColor(small_frame, cv2.COLOR_BGR2GRAY)
+            # Convert the image from BGR color (which OpenCV uses) to RGB color (which face_recognition uses)
+            rgb_small_frame = cv2.cvtColor(gray_small_frame, cv2.COLOR_BGR2RGB)
 
             face_locations = face_recognition.face_locations(rgb_small_frame)
             face_encodings = face_recognition.face_encodings(rgb_small_frame, face_locations)
@@ -118,7 +121,7 @@ def start_stream():
             face_names = process_face_recognition(rgb_small_frame, face_encodings, face_locations)
 
         if face_names and len(face_locations) > 0 and len(face_names) > 0 and len(face_locations)==len(face_names):
-            draw_faces(frame, face_locations, face_names)
+            draw_faces(frame, face_locations, face_names, frame_size_ratio)
 
         if canvas is not None:
             frame_pil = Image.fromarray(frame)

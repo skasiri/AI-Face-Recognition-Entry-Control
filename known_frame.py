@@ -80,7 +80,10 @@ def create_known_frame(parent):
     def create_image_frame(melli, name, face_image):
             
             box = ttk.Frame(known_scrollable_frame)
-            box.pack(pady=5)
+            if not image_frames:
+                box.pack(pady=5)
+            else:
+                box.pack(before=image_frames[0][0], pady=5)
 
             image = cv2.cvtColor(face_image, cv2.COLOR_BGR2RGB)
             image = cv2.resize(image, image_size, interpolation=cv2.INTER_LANCZOS4)
@@ -128,6 +131,17 @@ def create_known_frame(parent):
                 image_frames.remove((image_frame, melli))
                 break
 
+    def update_image_frame(melli, name, face_image):
+        for image_frame, image_melli in image_frames:
+            if image_melli == melli:
+                image = cv2.cvtColor(face_image, cv2.COLOR_BGR2RGB)
+                image = cv2.resize(image, image_size, interpolation=cv2.INTER_LANCZOS4)
+                image = Image.fromarray(image)
+                photo = ImageTk.PhotoImage(image)
+
+                # image_frame.config(image=photo)
+                image_frame.image = photo
+
     def edit_person(melli, image_list):
         print(f"Edit person: {melli}")
         create_edit_dialog(melli, image_list)
@@ -145,10 +159,18 @@ def create_known_frame(parent):
 
             known_faces_list = get_known_faces_list()
 
-            for image_frame, melli in image_frames:
-                remove_image_frame(melli)
+            for item in known_faces_list:
+                melli, name, face_image, confidence, landmarks_list, face_encoding, insertAt, updateAt = item  # Assuming the tuple contains (name, face_image, confidence)
+                if not any(image_melli == melli for _, image_melli in image_frames):
+                    image_frame = create_image_frame(melli, name, face_image)
+                    image_frames.insert(0, (image_frame, melli))
+                else:
+                    update_image_frame(melli, name, face_image)
 
-            display_images(known_faces_list)
+            # for image_frame, melli in image_frames:
+                # remove_image_frame(melli)
+
+            # display_images(known_faces_list)
             time.sleep(3)
 
     # Initial display of images

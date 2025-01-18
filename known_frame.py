@@ -44,7 +44,7 @@ def create_known_frame(parent):
     live_view_switch = ttk.Checkbutton(
         known_frame, text="Live View", variable=live_view_var, command=toggle_live_view
     )
-    live_view_switch.pack(pady=5)
+    # live_view_switch.pack(pady=5)
 
     canvas_frame = ttk.Frame(known_frame)
     canvas_frame.pack(fill="both", expand=True)
@@ -74,8 +74,8 @@ def create_known_frame(parent):
     def display_images(image_list):
         for item in image_list:
             melli, name, face_image, confidence, landmarks_list, face_encoding, insertAt, updateAt = item  # Assuming the tuple contains (name, face_image, confidence)
-            image_frame = create_image_frame(melli, name, face_image)
-            image_frames.append((image_frame, melli))
+            box = create_image_frame(melli, name, face_image)
+            image_frames.append((box, melli))
 
     def create_image_frame(melli, name, face_image):
             
@@ -132,15 +132,17 @@ def create_known_frame(parent):
                 break
 
     def update_image_frame(melli, name, face_image):
-        for image_frame, image_melli in image_frames:
+        for box, image_melli in image_frames:
             if image_melli == melli:
+
                 image = cv2.cvtColor(face_image, cv2.COLOR_BGR2RGB)
                 image = cv2.resize(image, image_size, interpolation=cv2.INTER_LANCZOS4)
                 image = Image.fromarray(image)
                 photo = ImageTk.PhotoImage(image)
 
-                # image_frame.config(image=photo)
-                image_frame.image = photo
+                box_image = box.winfo_children()[0]
+                box_image.config(image=photo)
+                box_image.image = photo
 
     def edit_person(melli, image_list):
         print(f"Edit person: {melli}")

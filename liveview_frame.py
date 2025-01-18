@@ -25,7 +25,7 @@ ip_camera_connection_string = ""
 face_locations = []
 face_names = []
 on_air = False
-frame_size_ratio = 0.25
+frame_size_ratio = 0.2
 
 if os.path.exists("config.pkl"):
     with open("config.pkl", "rb") as f:

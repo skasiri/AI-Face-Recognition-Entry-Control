@@ -10,6 +10,8 @@ from liveview_frame import create_register_dialog
 from utils.face_list import get_unknown_faces_list
 
 unknown_update_frame = True
+image_frames = []
+
 def create_unknown_frame(parent):
 
     unknown_frame = ttk.Frame(parent, padding="10", relief="solid")
@@ -41,7 +43,7 @@ def create_unknown_frame(parent):
     live_view_switch = ttk.Checkbutton(
         unknown_frame, text="Live View", variable=live_view_var, command=toggle_live_view
     )
-    live_view_switch.pack(pady=5)
+    # live_view_switch.pack(pady=5)
 
     canvas_frame = ttk.Frame(unknown_frame)
     canvas_frame.pack(fill="both", expand=True)
@@ -69,20 +71,31 @@ def create_unknown_frame(parent):
     def display_images(image_list):
         for item in image_list:
             name, face_image, confidence, landmarks_list, face_encoding, insertAt, updateAt = item  # Assuming the tuple contains (name, face_image, confidence)
+            box = create_image_frame(name, face_image)
+            image_frames.append((box, name))
+
+    def create_image_frame(name, face_image):
+                        
+            box = ttk.Frame(scrollable_frame)
+            if not image_frames:
+                box.pack(pady=5)
+            else:
+                box.pack(before=image_frames[0][0], pady=5)
+
             image = cv2.cvtColor(face_image, cv2.COLOR_BGR2RGB)
             image = cv2.resize(image, image_size, interpolation=cv2.INTER_LANCZOS4)
             image = Image.fromarray(image)
             photo = ImageTk.PhotoImage(image)
 
-            image_label = ttk.Label(scrollable_frame, image=photo)
+            image_label = ttk.Label(box, image=photo)
             image_label.image = photo
             image_label.pack(pady=(0, 5))
 
-            name_label = ttk.Label(scrollable_frame, text=name, font=("Helvetica", 12))
+            name_label = ttk.Label(box, text=name, font=("Helvetica", 12))
             name_label.pack(pady=5)
             
             # Create a frame to hold the buttons
-            button_frame = ttk.Frame(scrollable_frame)
+            button_frame = ttk.Frame(box)
             button_frame.pack(pady=5)
             # Load icons for the buttons
             remove_icon = ImageTk.PhotoImage(Image.open("icons/eye-remove.png").resize((20, 20)))
@@ -96,6 +109,28 @@ def create_unknown_frame(parent):
             register_button.image = register_icon
             register_button.pack(side="left", padx=5)
 
+            return box
+
+    def remove_image_frame(melli):
+        for image_frame, image_melli in image_frames:
+            if image_melli == melli:
+                image_frame.destroy()
+                image_frames.remove((image_frame, melli))
+                break
+
+    def update_image_frame(name, face_image):
+        for box, image_name in image_frames:
+            if image_name == name:
+
+                image = cv2.cvtColor(face_image, cv2.COLOR_BGR2RGB)
+                image = cv2.resize(image, image_size, interpolation=cv2.INTER_LANCZOS4)
+                image = Image.fromarray(image)
+                photo = ImageTk.PhotoImage(image)
+
+                box_image = box.winfo_children()[0]
+                box_image.config(image=photo)
+                box_image.image = photo
+
     def remove_image(name):
         remove_face_from_list(name)
 
@@ -108,10 +143,22 @@ def create_unknown_frame(parent):
             if unknown_update_frame is False:
                 time.sleep(3)
                 continue
+
             unknown_faces_list = get_unknown_faces_list()
-            for widget in scrollable_frame.winfo_children():
-                widget.destroy()
-            display_images(unknown_faces_list)
+            
+            for item in unknown_faces_list:
+                name, face_image, confidence, landmarks_list, face_encoding, insertAt, updateAt = item  # Assuming the tuple contains (name, face_image, confidence)
+                if not any(image_name == name for _, image_name in image_frames):
+                    image_frame = create_image_frame(name, face_image)
+                    image_frames.insert(0, (image_frame, name))
+                else:
+                    update_image_frame(name, face_image)
+            # for widget in scrollable_frame.winfo_children():
+            #     widget.destroy()
+            
+            # for image_frame, name in image_frames:
+                # remove_image_frame(name)
+            # display_images(unknown_faces_list)
             time.sleep(3)
     
     # Initial display of images

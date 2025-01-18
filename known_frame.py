@@ -23,29 +23,6 @@ def create_known_frame(parent):
     # Create a canvas and scrollbar
     canvas = tk.Canvas(known_frame, width=120)
 
-    # Add a switch for live view
-    live_view_var = tk.BooleanVar(value=True)  # Variable to hold the state of the switch
-
-    def toggle_live_view():
-        global known_update_frame
-        if live_view_var.get():
-            # Code to turn on live view
-            known_update_frame = True
-            print("Live view turned on")
-            # Resume the update_images_thread or start live view processing
-
-        else:
-            # Code to turn off live view
-            known_update_frame = False
-            print("Live view turned off")
-            # Pause or stop the update_images_thread or halt live view processing
-
-    # Create the switch button
-    live_view_switch = ttk.Checkbutton(
-        known_frame, text="Live View", variable=live_view_var, command=toggle_live_view
-    )
-    # live_view_switch.pack(pady=5)
-
     canvas_frame = ttk.Frame(known_frame)
     canvas_frame.pack(fill="both", expand=True)
 

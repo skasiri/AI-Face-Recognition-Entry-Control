@@ -25,7 +25,7 @@ ip_camera_connection_string = ""
 face_locations = []
 face_names = []
 on_air = False
-frame_size_ratio = 0.2
+frame_size_ratio = 0.5
 
 if os.path.exists("config.pkl"):
     with open("config.pkl", "rb") as f:
@@ -130,7 +130,7 @@ def start_stream():
             canvas.create_image(0, 0, anchor=tk.NW, image = frame_tk)
             canvas.image = frame_tk  # Keep a reference to avoid garbage collection
             # Increase the delay to reduce FPS
-            canvas.after(50, update_frame)  # 50 ms delay corresponds to 20 FPS
+            canvas.after(100, update_frame)  # 100 ms delay corresponds to 10 FPS
         process_current_frame = not process_current_frame
 
     update_frame()

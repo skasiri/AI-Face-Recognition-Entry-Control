@@ -100,7 +100,7 @@ def create_known_frame(parent):
             edit_button.pack(side="left", padx=5)
 
             # Create the register button
-            subscribe_button = ttk.Button(button_frame, image=subscribe_icon, command=lambda melli=melli: subscribe(melli))
+            subscribe_button = ttk.Button(button_frame, image=subscribe_icon, command=lambda melli=melli: create_subscribe_form(melli))
             subscribe_button.image = subscribe_icon
             subscribe_button.pack(side="left", padx=5)
 
@@ -108,13 +108,6 @@ def create_known_frame(parent):
             image_frame.config(borderwidth=2, relief="solid", background=color)
 
             return box
-
-    def remove_image_frame(melli):
-        for image_frame, image_melli in image_frames:
-            if image_melli == melli:
-                image_frame.destroy()
-                image_frames.remove((image_frame, melli))
-                break
 
     def update_image_frame(melli, name, face_image):
         for box, image_melli in image_frames:
@@ -128,14 +121,6 @@ def create_known_frame(parent):
                 box_image = box.winfo_children()[0]
                 box_image.config(image=photo)
                 box_image.image = photo
-
-    def edit_person(melli):
-        print(f"Edit person: {melli}")
-        create_edit_dialog(melli)
-
-    def subscribe(melli):
-        print(f"Subscribe person: {melli}")
-        create_subscribe_form(melli)
 
     def update_images():
         global known_update_frame

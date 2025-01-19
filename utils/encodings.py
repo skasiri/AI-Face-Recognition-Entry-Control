@@ -50,6 +50,16 @@ def remove_face_from_list(name):
             unknown_faces_list.pop(i)
             break
 
+def remove_face(melli):
+    global known_face_encodings, known_face_names, known_face_melli
+    
+    for i, saved_melli in enumerate(known_face_melli):
+        if saved_melli == melli:
+            known_face_encodings.pop(i)
+            known_face_names.pop(i)
+            known_face_melli.pop(i)
+            break
+
 def save_encoding(name, face_encoding, melli, first_name, last_name, mobile):
     global unknown_faces_list, known_face_encodings, known_face_names, persons
 

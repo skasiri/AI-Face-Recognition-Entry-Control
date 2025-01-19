@@ -51,7 +51,8 @@ def create_unknown_frame(parent):
             box = create_image_frame(name, face_image)
             image_frames.append((box, name))
 
-    def create_image_frame(name, face_image):
+    def create_image_frame(item):
+            name, face_image, confidence, landmarks_list, face_encoding, insertAt, updateAt = item  # Assuming the tuple contains (name, face_image, confidence)
                         
             box = ttk.Frame(scrollable_frame)
             if not image_frames:
@@ -82,7 +83,7 @@ def create_unknown_frame(parent):
             remove_button.image = remove_icon
             remove_button.pack(side="left", padx=5)
             # Create the register button
-            register_button = ttk.Button(button_frame, image=register_icon, command=lambda name=name: register_image(name, image_list))
+            register_button = ttk.Button(button_frame, image=register_icon, command=lambda name=name: create_register_dialog(item))
             register_button.image = register_icon
             register_button.pack(side="left", padx=5)
 
@@ -116,7 +117,7 @@ def create_unknown_frame(parent):
         global unknown_update_frame
         while True:
             if unknown_update_frame is False:
-                time.sleep(3)
+                time.sleep(1)
                 continue
 
             unknown_faces_list = get_unknown_faces_list()
@@ -124,7 +125,7 @@ def create_unknown_frame(parent):
             for item in unknown_faces_list:
                 name, face_image, confidence, landmarks_list, face_encoding, insertAt, updateAt = item  # Assuming the tuple contains (name, face_image, confidence)
                 if not any(image_name == name for _, image_name in image_frames):
-                    image_frame = create_image_frame(name, face_image)
+                    image_frame = create_image_frame(item)
                     image_frames.insert(0, (image_frame, name))
                 else:
                     update_image_frame(name, face_image)

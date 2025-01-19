@@ -7,9 +7,9 @@ from tkinter import ttk
 from tkinter import messagebox
 from PIL import Image, ImageTk
 import cv2
-from utils.encodings import remove_face_from_list, unknown_faces_list, known_face_names, known_face_melli
+from utils.encodings import unknown_faces_list
 from liveview_frame import create_edit_dialog, create_subscribe_form
-from utils.face_list import get_known_faces_list, known_faces_list
+from utils.face_list import get_known_faces_list, known_faces_list, remove_known_face
 from utils.subscription import Subscription
 
 known_update_frame = True
@@ -143,9 +143,10 @@ def create_known_frame(parent):
                                 image = item[2]
                                 face_encoding = item[5]  # Assuming the face_encoding is at index 5
                                 unknown_faces_list.append((name, image, None, [], face_encoding, int(time.time()), int(time.time())))
-                                known_face_names.remove(item[1])
-                                known_face_melli.remove(item[0])
-                                known_faces_list.remove(item)
+                                # known_face_names.remove(item[1])
+                                # known_face_melli.remove(item[0])
+                                # known_faces_list.remove(item)
+                                remove_known_face(melli)
                                 box.destroy()
                                 image_frames.remove((box, image_melli))
                                 break
@@ -172,10 +173,10 @@ def create_known_frame(parent):
 
 
     def update_images():
-        global known_update_frame, known_faces_list
         while True:
+            global known_update_frame, known_faces_list
             if known_update_frame is False:
-                time.sleep(3)
+                time.sleep(1)
                 continue
 
             known_faces_list = get_known_faces_list()

@@ -13,9 +13,9 @@ from freshest_frame import FreshestFrame
 import face_recognition
 from utils.face_recognition import process_face_recognition
 from utils.draw_face import draw_faces
-from utils.encodings import save_encoding, update_person, delete_person, get_person_by_melli
+from utils.encodings import save_encoding, update_person, delete_person, get_person_by_melli, remove_face
 from utils.subscription import Subscription
-from utils.face_list import get_known_faces_list
+from utils.face_list import get_known_faces_list, known_faces_list
 
 parent_frame = None
 middle_frame = None
@@ -156,14 +156,10 @@ def stop_stream():
     if freshest_frame is not None:
         freshest_frame.release()
 
-def create_register_dialog(name, image_list):
+def create_register_dialog(item):
     global parent_frame
 
-    for item in image_list:
-        if item[0] == name:
-            name, face_image, confidence, landmarks_list, face_encoding, insertAt, updateAt = item  # Assuming the tuple contains (name, face_image, confidence)
-            # fname, face_image, confidence, landmarks_list, face_encoding  = item
-            break
+    name, face_image, confidence, landmarks_list, face_encoding, insertAt, updateAt = item  # Assuming the tuple contains (name, face_image, confidence)
     
     def validate_form():
         if not entry_melli_code.get() or not entry_first_name.get() or not entry_last_name.get() or not entry_mobile.get():
@@ -202,7 +198,10 @@ def create_register_dialog(name, image_list):
         first_name = entry_first_name.get()
         last_name = entry_last_name.get()
         mobile = entry_mobile.get()
+        name = f"{first_name} {last_name}"
         save_encoding(name, face_encoding, melli_code, first_name, last_name, mobile)
+        global known_faces_list
+        known_faces_list.append((melli_code, name, face_image, confidence, [], face_encoding, int(time.time()), int(time.time())))
         # Here you can add the code to handle the registration logic
         messagebox.showinfo("Registration", "User registered successfully!")
         cancel_registration()
@@ -296,6 +295,8 @@ def create_edit_dialog(melli):
         last_name = entry_last_name.get()
         mobile = entry_mobile.get()
         update_person(melli_code, first_name, last_name, mobile)
+        known_faces_list.append((melli, name, face_image, confidence, [], face_encoding, int(time.time()), int(time.time())))
+
         # Here you can add the code to handle the registration logic
         messagebox.showinfo("Update User Info", "User updated successfully!")
         cancel_registration()
@@ -311,6 +312,7 @@ def create_edit_dialog(melli):
     def delete_user():
         if messagebox.askyesno("Verify Delete", "Are you sure you want to delete this user?"):
             delete_person(melli)
+            remove_face(melli)
             messagebox.showinfo("Delete User", "User deleted successfully!")
         cancel_registration()
 

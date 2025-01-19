@@ -29,10 +29,13 @@ on_air = False
 grayscale = False
 frame_size_ratio = 0.5
 
-if os.path.exists("config.pkl"):
-    with open("config.pkl", "rb") as f:
-        config = pickle.load(f)
-        camera_option, ip_camera_connection_string, grayscale = config
+try:
+    if os.path.exists("config.pkl"):
+        with open("config.pkl", "rb") as f:
+            config = pickle.load(f)
+            camera_option, ip_camera_connection_string, grayscale, frame_size_ratio = config
+except Exception as e:
+    print(f"Error loading config: {e}")
 
 def create_live_view_frame(parent):
     global parent_frame, middle_frame, canvas

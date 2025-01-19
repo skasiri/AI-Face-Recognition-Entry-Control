@@ -76,8 +76,11 @@ def process_face_recognition(frame, face_encodings, face_locations):
 
                 for i, (saved_melli, saved_name, saved_image, saved_confidence, landmarks_list, _, insertAt, updateAt) in enumerate(known_faces_list):
                     if saved_melli == melli:
-                        if float(confidence.rstrip('%')) > float(saved_confidence.rstrip('%')):
-                            known_faces_list[i] = (saved_melli, name, face_image, confidence, [], face_encoding, insertAt, int(time.time()))
+                        try:
+                            if float(confidence.rstrip('%')) > float(saved_confidence.rstrip('%')):
+                                known_faces_list[i] = (saved_melli, name, face_image, confidence, [], face_encoding, insertAt, int(time.time()))
+                        except ValueError:
+                            pass
                         break
 
             else:

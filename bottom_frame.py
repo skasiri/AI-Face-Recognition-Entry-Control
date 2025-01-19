@@ -3,8 +3,7 @@ import tkinter as tk
 from tkinter import ttk
 import cv2
 import pickle
-from liveview_frame import camera_option, ip_camera_connection_string, set_camera, start_stream, on_air, grayscale, set_grayscale, frame_size_ratio, set_frame_size_ratio
-
+from liveview_frame import camera_option, ip_camera_connection_string, set_camera, start_stream, on_air, grayscale, set_grayscale, frame_size_ratio, set_frame_size_ratio, stop_stream
 
 def create_bottom_frame(parent):
     
@@ -17,16 +16,25 @@ def create_bottom_frame(parent):
     def show_config_window():
 
         def save_config():
+
+            stop_stream()
+            
+            frame_size_ratio_new = (100 / resize_value.get()) / 100
+            set_frame_size_ratio(frame_size_ratio_new)
+
+            set_grayscale(grayscale_process.get())
+            
             if camera.get() != camera_option:
                 set_camera(camera.get())
-            set_grayscale(grayscale_process.get())
-            set_frame_size_ratio((100 / resize_value.get()) / 100)
+
+
             if not on_air:
+                stop_stream()
                 set_camera(camera.get())
                 start_stream()
 
             with open("config.pkl", "wb") as f:
-                data = (camera.get(), connection_string.get(), grayscale_process.get())
+                data = (camera.get(), connection_string.get(), grayscale_process.get(), frame_size_ratio_new)
                 pickle.dump(data, f)
 
             print("Configuration saved")

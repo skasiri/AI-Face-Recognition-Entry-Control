@@ -36,7 +36,7 @@ def create_bottom_frame(parent):
 
         # Create a frame for camera selection
         camera_frame = ttk.Frame(config_window)
-        camera_frame.pack(fill="both", expand=True)
+        camera_frame.pack(fill="both", padx=10, pady=10)
 
         # Create radio buttons for camera options
         camera_frame.columnconfigure(0, weight=0)
@@ -56,8 +56,8 @@ def create_bottom_frame(parent):
         # Function to toggle visibility
         def toggle_ip_camera_entry(*args):
             if camera.get() == "ip":
-                ip_camera_label.grid(row=1, column=1, sticky="nsew")
-                ip_camera_entry.grid(row=1, column=2, columnspan=2, sticky="nsew")
+                ip_camera_label.grid(row=1, column=1, sticky="nsew", padx=10, pady=10)
+                ip_camera_entry.grid(row=1, column=2, columnspan=2, sticky="nsew", padx=10, pady=10)
             else:
                 ip_camera_label.grid_remove()
                 ip_camera_entry.grid_remove()
@@ -71,7 +71,7 @@ def create_bottom_frame(parent):
         
         # Create a frame for BW process switch
         bw_frame = ttk.Frame(config_window)
-        bw_frame.pack(fill="both", expand=True)
+        bw_frame.pack(fill="both", pady=10)
 
 
         # Create a switch for Grayscale process
@@ -80,7 +80,7 @@ def create_bottom_frame(parent):
 
         # Create a button to save the configuration
         save_button = ttk.Button(config_window, text="Save", command=save_config)
-        save_button.pack(pady=10)
+        save_button.pack(padx=10, pady=10, side="bottom")
 
 
     def show_config_window1():

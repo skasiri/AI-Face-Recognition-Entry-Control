@@ -49,12 +49,6 @@ def create_known_frame(parent):
     
     image_size = (85, 85)
 
-    def display_images(image_list):
-        for item in image_list:
-            melli, name, face_image, confidence, landmarks_list, face_encoding, insertAt, updateAt = item  # Assuming the tuple contains (name, face_image, confidence)
-            box = create_image_frame(melli, name, face_image)
-            image_frames.append((box, melli))
-
     def create_image_frame(melli, name, face_image):
             
             box = ttk.Frame(known_scrollable_frame)

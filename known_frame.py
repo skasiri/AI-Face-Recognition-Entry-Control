@@ -1,17 +1,19 @@
 import os
+from random import randint
 import threading
 import time
 import tkinter as tk
 from tkinter import ttk
+from tkinter import messagebox
 from PIL import Image, ImageTk
 import cv2
-from utils.encodings import remove_face_from_list
+from utils.encodings import remove_face_from_list, unknown_faces_list, known_face_names, known_face_melli
 from liveview_frame import create_edit_dialog, create_subscribe_form
-from utils.face_list import get_known_faces_list
+from utils.face_list import get_known_faces_list, known_faces_list
 from utils.subscription import Subscription
 
 known_update_frame = True
-known_faces_list = []
+# known_faces_list = []
 image_frames = []
 
 def create_known_frame(parent):
@@ -84,7 +86,7 @@ def create_known_frame(parent):
             person_cry_icon = ImageTk.PhotoImage(Image.open("icons/person-cry.png").resize((20, 20)))
 
             # Create the wrong detect button
-            cry_button = ttk.Button(button_frame, image=person_cry_icon, command=lambda melli=melli: remove_face_from_list(melli))
+            cry_button = ttk.Button(button_frame, image=person_cry_icon, command=lambda melli=melli: remove_image_frame(melli))
             cry_button.image = person_cry_icon
             cry_button.pack(side="left", padx=5)
 
@@ -116,8 +118,61 @@ def create_known_frame(parent):
                 box_image.config(image=photo)
                 box_image.image = photo
 
+    def remove_image_frame(melli):
+        # def handle_remove(melli):
+            dialog = tk.Toplevel()
+            dialog.title("Remove Confirmation")
+
+            frame = ttk.Frame(dialog)
+            frame.pack(padx=10, pady=10)
+
+            label = ttk.Label(frame, text="Are you sure this face is wrong detected?")
+            label.pack(pady=5)
+
+            button_frame = ttk.Frame(frame)
+            button_frame.pack(pady=5)
+
+            def add_to_unknown():
+                global unknown_faces_list, known_faces_list
+                
+                for box, image_melli in image_frames:
+                    if image_melli == melli:
+                        name = f"Unknown{randint(0, 1000)}"
+                        for item in known_faces_list:
+                            if item[0] == melli:  # Assuming melli is the unique identifier
+                                image = item[2]
+                                face_encoding = item[5]  # Assuming the face_encoding is at index 5
+                                unknown_faces_list.append((name, image, None, [], face_encoding, int(time.time()), int(time.time())))
+                                known_face_names.remove(item[1])
+                                known_face_melli.remove(item[0])
+                                known_faces_list.remove(item)
+                                box.destroy()
+                                image_frames.remove((box, image_melli))
+                                break
+                        break
+                        
+                dialog.destroy()
+
+            def another_person():
+                # create_edit_dialog(melli)
+                dialog.destroy()
+
+            def cancel():
+                dialog.destroy()
+
+            unknown_button = ttk.Button(button_frame, text="Add to Unknown", command=add_to_unknown)
+            unknown_button.pack(side="left", padx=5)
+
+            another_button = ttk.Button(button_frame, text="Another Person", command=another_person)
+            another_button.pack(side="left", padx=5)
+
+            cancel_button = ttk.Button(button_frame, text="Cancel", command=cancel)
+            cancel_button.pack(side="left", padx=5)
+
+
+
     def update_images():
-        global known_update_frame
+        global known_update_frame, known_faces_list
         while True:
             if known_update_frame is False:
                 time.sleep(3)
@@ -133,7 +188,7 @@ def create_known_frame(parent):
                 else:
                     update_image_frame(melli, name, face_image)
 
-            time.sleep(3)
+            time.sleep(1)
 
     # Initial display of images
     update_images_thread = threading.Thread(target=update_images)

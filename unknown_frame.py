@@ -88,13 +88,6 @@ def create_unknown_frame(parent):
 
             return box
 
-    def remove_image_frame(melli):
-        for image_frame, image_melli in image_frames:
-            if image_melli == melli:
-                image_frame.destroy()
-                image_frames.remove((image_frame, melli))
-                break
-
     def update_image_frame(name, face_image):
         for box, image_name in image_frames:
             if image_name == name:
@@ -109,7 +102,12 @@ def create_unknown_frame(parent):
                 box_image.image = photo
 
     def remove_image(name):
-        remove_face_from_list(name)
+        for box, image_name in image_frames:
+            if image_name == name:
+                remove_face_from_list(name)
+                box.destroy()
+                image_frames.remove((box, name))
+                break
 
     def register_image(name, image_list):
         create_register_dialog(name, image_list)
@@ -130,13 +128,8 @@ def create_unknown_frame(parent):
                     image_frames.insert(0, (image_frame, name))
                 else:
                     update_image_frame(name, face_image)
-            # for widget in scrollable_frame.winfo_children():
-            #     widget.destroy()
-            
-            # for image_frame, name in image_frames:
-                # remove_image_frame(name)
-            # display_images(unknown_faces_list)
-            time.sleep(3)
+
+            time.sleep(1)
     
     # Initial display of images
     update_images_thread = threading.Thread(target=update_images)

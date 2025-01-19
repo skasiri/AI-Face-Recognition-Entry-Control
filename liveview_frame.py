@@ -26,11 +26,13 @@ ip_camera_connection_string = ""
 face_locations = []
 face_names = []
 on_air = False
+grayscale = False
 frame_size_ratio = 0.5
 
 if os.path.exists("config.pkl"):
     with open("config.pkl", "rb") as f:
-        camera_option, ip_camera_connection_string = pickle.load(f)
+        config = pickle.load(f)
+        camera_option, ip_camera_connection_string, grayscale = config
 
 def create_live_view_frame(parent):
     global parent_frame, middle_frame, canvas
@@ -72,6 +74,10 @@ def set_camera(camera):
             canvas.delete("all")
             print(f"Error setting camera: {e}")
 
+def set_grayscale(new_grayscale):
+    global grayscale
+    grayscale = new_grayscale
+
 def set_canvas(new_canvas):
     global canvas
     canvas = new_canvas
@@ -99,7 +105,7 @@ def start_stream():
 
 
     def update_frame():
-        global canvas, on_air
+        global canvas, on_air, grayscale
         global  face_encodings, process_current_frame, face_names, face_locations
         nonlocal last_saved_time
 
@@ -112,9 +118,12 @@ def start_stream():
         if process_current_frame:
             on_air = True
             small_frame = cv2.resize(frame, (0, 0), fx=frame_size_ratio, fy=frame_size_ratio)
-            gray_small_frame = cv2.cvtColor(small_frame, cv2.COLOR_BGR2GRAY)
-            # Convert the image from BGR color (which OpenCV uses) to RGB color (which face_recognition uses)
-            rgb_small_frame = cv2.cvtColor(gray_small_frame, cv2.COLOR_BGR2RGB)
+            if grayscale:
+                gray_small_frame = cv2.cvtColor(small_frame, cv2.COLOR_BGR2GRAY)
+                # Convert the image from BGR color (which OpenCV uses) to RGB color (which face_recognition uses)
+                rgb_small_frame = cv2.cvtColor(gray_small_frame, cv2.COLOR_BGR2RGB)
+            else:
+                rgb_small_frame = cv2.cvtColor(small_frame, cv2.COLOR_BGR2RGB)
 
             face_locations = face_recognition.face_locations(rgb_small_frame)
             face_encodings = face_recognition.face_encodings(rgb_small_frame, face_locations)

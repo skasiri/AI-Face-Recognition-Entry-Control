@@ -78,6 +78,11 @@ def set_grayscale(new_grayscale):
     global grayscale
     grayscale = new_grayscale
 
+def set_frame_size_ratio(new_ratio):
+    global frame_size_ratio
+    print('set_frame_size_ratio',new_ratio)
+    frame_size_ratio = new_ratio
+
 def set_canvas(new_canvas):
     global canvas
     canvas = new_canvas

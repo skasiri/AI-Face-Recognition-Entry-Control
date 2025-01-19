@@ -11,6 +11,7 @@ from utils.face_list import get_known_faces_list
 from utils.subscription import Subscription
 
 known_update_frame = True
+known_faces_list = []
 image_frames = []
 
 def create_known_frame(parent):
@@ -85,17 +86,24 @@ def create_known_frame(parent):
             edit_icon = ImageTk.PhotoImage(Image.open("icons/person-edit.png").resize((20, 20)))
             subscribe_active_icon = ImageTk.PhotoImage(Image.open("icons/timer-edit.png").resize((20, 20)))
             subscribe_inactive_icon = ImageTk.PhotoImage(Image.open("icons/timer-alert.png").resize((20, 20)))
-
             subscribe_icon = subscribe_active_icon if active is not None else subscribe_inactive_icon
+            person_cry_icon = ImageTk.PhotoImage(Image.open("icons/person-cry.png").resize((20, 20)))
+
+            # Create the wrong detect button
+            cry_button = ttk.Button(button_frame, image=person_cry_icon, command=lambda melli=melli: remove_face_from_list(melli))
+            cry_button.image = person_cry_icon
+            cry_button.pack(side="left", padx=5)
 
             # Create the remove button
-            edit_button = ttk.Button(button_frame, image=edit_icon, command=lambda melli=melli: edit_person(melli, image_list))
+            edit_button = ttk.Button(button_frame, image=edit_icon, command=lambda melli=melli: create_edit_dialog(melli))
             edit_button.image = edit_icon
             edit_button.pack(side="left", padx=5)
+
             # Create the register button
             subscribe_button = ttk.Button(button_frame, image=subscribe_icon, command=lambda melli=melli: subscribe(melli))
             subscribe_button.image = subscribe_icon
             subscribe_button.pack(side="left", padx=5)
+
 
             image_frame.config(borderwidth=2, relief="solid", background=color)
 
@@ -121,9 +129,9 @@ def create_known_frame(parent):
                 box_image.config(image=photo)
                 box_image.image = photo
 
-    def edit_person(melli, image_list):
+    def edit_person(melli):
         print(f"Edit person: {melli}")
-        create_edit_dialog(melli, image_list)
+        create_edit_dialog(melli)
 
     def subscribe(melli):
         print(f"Subscribe person: {melli}")
@@ -146,10 +154,6 @@ def create_known_frame(parent):
                 else:
                     update_image_frame(melli, name, face_image)
 
-            # for image_frame, melli in image_frames:
-                # remove_image_frame(melli)
-
-            # display_images(known_faces_list)
             time.sleep(3)
 
     # Initial display of images

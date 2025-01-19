@@ -15,6 +15,7 @@ from utils.face_recognition import process_face_recognition
 from utils.draw_face import draw_faces
 from utils.encodings import save_encoding, update_person, delete_person, get_person_by_melli
 from utils.subscription import Subscription
+from utils.face_list import get_known_faces_list
 
 parent_frame = None
 middle_frame = None
@@ -252,7 +253,7 @@ def create_register_dialog(name, image_list):
     cancel_button = tk.Button(register_frame, text="لغو", command=cancel_registration, bg="red", fg="white", height=2)
     cancel_button.grid(row=5, column=1, padx=10, pady=10, sticky="ew")
 
-def create_edit_dialog(melli, image_list):
+def create_edit_dialog(melli):
     global parent_frame
 
     person = get_person_by_melli(melli)
@@ -260,6 +261,8 @@ def create_edit_dialog(melli, image_list):
     if person is None:
         return
     
+    image_list = get_known_faces_list()
+
     for item in image_list: 
         if item[0] == melli:
             melli, name, face_image, confidence, landmarks_list, face_encoding, insertAt, updateAt = item 
